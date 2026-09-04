@@ -78,14 +78,26 @@ export function validateAddress(address: Partial<DeliveryAddress>): { valid: boo
 export async function getSavedAddresses(userId?: string): Promise<DeliveryAddress[]> {
   if (supabase && userId) {
     try {
-      const { data, error } = await supabase
+      // 1. Try delivery_addresses (standard schema table)
+      const { data: delData, error: delError } = await supabase
+        .from('delivery_addresses')
+        .select('*')
+        .eq('user_id', userId)
+        .order('is_default', { ascending: false });
+
+      if (!delError && delData && delData.length > 0) {
+        return delData as DeliveryAddress[];
+      }
+
+      // 2. Fallback to user_addresses table
+      const { data: userData, error: userError } = await supabase
         .from('user_addresses')
         .select('*')
         .eq('user_id', userId)
         .order('is_default', { ascending: false });
 
-      if (!error && data && data.length > 0) {
-        return data as DeliveryAddress[];
+      if (!userError && userData && userData.length > 0) {
+        return userData as DeliveryAddress[];
       }
     } catch (err) {
       console.warn('Database address fetch error:', err);
@@ -142,20 +154,32 @@ export async function saveDeliveryAddress(
     try {
       if (cleanAddress.is_default) {
         // Unset other default addresses for this user
-        await supabase
-          .from('user_addresses')
-          .update({ is_default: false })
-          .eq('user_id', userId);
+        await Promise.allSettled([
+          supabase.from('delivery_addresses').update({ is_default: false }).eq('user_id', userId),
+          supabase.from('user_addresses').update({ is_default: false }).eq('user_id', userId),
+        ]);
       }
 
+      // Upsert to delivery_addresses
       const { data, error } = await supabase
-        .from('user_addresses')
+        .from('delivery_addresses')
         .upsert(cleanAddress)
         .select()
-        .single();
+        .maybeSingle();
 
       if (!error && data) {
         return data as DeliveryAddress;
+      }
+
+      // Try fallback to user_addresses
+      const { data: uData, error: uError } = await supabase
+        .from('user_addresses')
+        .upsert(cleanAddress)
+        .select()
+        .maybeSingle();
+
+      if (!uError && uData) {
+        return uData as DeliveryAddress;
       }
     } catch (err) {
       console.warn('Database address upsert warning:', err);
@@ -192,7 +216,10 @@ export async function saveDeliveryAddress(
 export async function deleteDeliveryAddress(id: string, userId?: string): Promise<void> {
   if (supabase && userId) {
     try {
-      await supabase.from('user_addresses').delete().eq('id', id).eq('user_id', userId);
+      await Promise.allSettled([
+        supabase.from('delivery_addresses').delete().eq('id', id).eq('user_id', userId),
+        supabase.from('user_addresses').delete().eq('id', id).eq('user_id', userId),
+      ]);
     } catch (err) {
       console.warn('Database address delete error:', err);
     }
@@ -212,8 +239,12 @@ export async function deleteDeliveryAddress(id: string, userId?: string): Promis
 export async function setDefaultDeliveryAddress(id: string, userId?: string): Promise<void> {
   if (supabase && userId) {
     try {
-      await supabase.from('user_addresses').update({ is_default: false }).eq('user_id', userId);
-      await supabase.from('user_addresses').update({ is_default: true }).eq('id', id).eq('user_id', userId);
+      await Promise.allSettled([
+        supabase.from('delivery_addresses').update({ is_default: false }).eq('user_id', userId),
+        supabase.from('delivery_addresses').update({ is_default: true }).eq('id', id).eq('user_id', userId),
+        supabase.from('user_addresses').update({ is_default: false }).eq('user_id', userId),
+        supabase.from('user_addresses').update({ is_default: true }).eq('id', id).eq('user_id', userId),
+      ]);
     } catch (err) {
       console.warn('Database set default address error:', err);
     }

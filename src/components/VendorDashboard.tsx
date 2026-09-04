@@ -243,7 +243,7 @@ export default function VendorDashboard({
         </div>
       </div>
 
-      {/* Navigation Tabs (Requirement 1: 9 Tab Sections) */}
+      {/* Navigation Tabs */}
       <div className="border-b border-cream-200 bg-cream-50 px-6 overflow-x-auto [scrollbar-width:thin] dark:border-gray-800 dark:bg-gray-900">
         <div className="flex space-x-1 py-2 min-w-max">
           {[
@@ -532,7 +532,7 @@ export default function VendorDashboard({
           </div>
         )}
 
-        {/* Tab 3: Gift Hamper Components (Requirement 2) */}
+        {/* Tab 3: Gift Hamper Components */}
         {activeTab === 'hamper-components' && (
           <div className="space-y-6">
             <div className="rounded-2xl bg-gold-500/10 border border-gold-400/30 p-5">
@@ -607,7 +607,7 @@ export default function VendorDashboard({
           />
         )}
 
-        {/* Tab 5: My Gift Hampers (Requirement 3, 6) */}
+        {/* Tab 5: My Gift Hampers */}
         {activeTab === 'my-hampers' && (
           <div className="space-y-6">
             <div className="flex items-center justify-between">

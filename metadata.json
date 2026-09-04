@@ -1,8 +1,0 @@
-{
-  "name": "A_S Hamper",
-  "description": "Personalised Artisan Gift Hampers, Hand-Packed and Delivered across India",
-  "requestFramePermissions": [],
-  "majorCapabilities": [
-    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
-  ]
-}

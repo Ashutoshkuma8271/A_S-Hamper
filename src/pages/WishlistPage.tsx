@@ -29,7 +29,7 @@ export default function WishlistPage() {
   const [sortBy, setSortBy] = useState<SortOption>('recent');
   const [itemToRemove, setItemToRemove] = useState<CartProduct | null>(null);
 
-  // Filter & Sort Logic (Requirements 11 & 12)
+  // Filter & Sort Logic
   const filteredItems = useMemo(() => {
     let result = [...items];
 
@@ -85,7 +85,7 @@ export default function WishlistPage() {
   return (
     <main className="min-h-screen bg-cream-50/60 dark:bg-gray-900 pt-24 pb-24 px-4 sm:px-6 lg:px-8 font-sans transition-colors">
       <div className="mx-auto max-w-7xl">
-        {/* Header Section (Requirement 3) */}
+        {/* Header Section */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-cream-200 dark:border-gray-800 pb-6 mb-8">
           <div>
             <div className="flex items-center gap-2">
@@ -102,7 +102,7 @@ export default function WishlistPage() {
             </p>
           </div>
 
-          {/* Search & Sort Bar (Requirements 11 & 12) */}
+          {/* Search & Sort Bar */}
           <div className="flex flex-wrap items-center gap-3">
             {/* Instant Search Field */}
             <div className="relative flex-1 sm:w-64">
@@ -130,7 +130,7 @@ export default function WishlistPage() {
           </div>
         </div>
 
-        {/* Wishlist Product Grid (Requirement 4: 4 cols desktop, 2-3 cols tablet, 2 cols mobile) */}
+        {/* Wishlist Product Grid */}
         {filteredItems.length === 0 ? (
           <div className="py-16 text-center">
             <p className="text-sm font-semibold text-wine-800 dark:text-white">
@@ -178,7 +178,7 @@ export default function WishlistPage() {
                         className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                       />
 
-                      {/* Active Heart Icon Button (Requirement 5) */}
+                      {/* Active Heart Icon Button */}
                       <button
                         type="button"
                         onClick={() => setItemToRemove(product)}
@@ -206,7 +206,7 @@ export default function WishlistPage() {
                       )}
                     </div>
 
-                    {/* Product Details (Requirement 4) */}
+                    {/* Product Details */}
                     <div className="mt-3.5 space-y-1">
                       <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-gold-600">
                         <Store className="h-3 w-3" /> {product.vendor_name || 'A_S Artisan'}
@@ -237,7 +237,7 @@ export default function WishlistPage() {
                         )}
                       </div>
 
-                      {/* Stock Status Badge (Requirement 8) */}
+                      {/* Stock Status Badge */}
                       <div className="pt-1">
                         {isOutOfStock ? (
                           <span className="text-[10px] font-bold text-red-600 uppercase tracking-wider">
@@ -252,7 +252,7 @@ export default function WishlistPage() {
                     </div>
                   </div>
 
-                  {/* Actions: Add to Cart vs Move to Cart (Requirements 6 & 7) */}
+                  {/* Actions: Add to Cart vs Move to Cart */}
                   <div className="mt-4 space-y-2 pt-2 border-t border-cream-200 dark:border-gray-700">
                     <button
                       onClick={() => add(product)}
@@ -301,7 +301,7 @@ export default function WishlistPage() {
   );
 }
 
-{/* Empty Wishlist View (Requirement 10) */}
+{/* Empty Wishlist View */}
 function EmptyWishlistView() {
   return (
     <main className="min-h-screen bg-cream-50/60 dark:bg-gray-900 pt-24 pb-20 px-4 sm:px-6 lg:px-8 font-sans transition-colors">

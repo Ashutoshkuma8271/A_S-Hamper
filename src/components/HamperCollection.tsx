@@ -143,7 +143,7 @@ function VendorHamperCard({
           {hamper.name}
         </h3>
 
-        {/* Included Items Teaser with Checkmarks (Requirement 7) */}
+        {/* Included Items Teaser with Checkmarks */}
         {hamper.items && hamper.items.length > 0 && (
           <div className="mt-3 space-y-1.5 rounded-2xl bg-cream-100/70 p-3 text-xs text-gray-700 dark:bg-gray-700/50 dark:text-gray-300">
             <p className="font-semibold text-wine-700 dark:text-gold-300 flex items-center gap-1 text-[11px]">

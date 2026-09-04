@@ -55,7 +55,7 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
     }
   }, [items, userId]);
 
-  // Load and merge user wishlist from Supabase upon authentication (Requirements 13 & 14)
+  // Load and merge user wishlist from Supabase upon authentication
   useEffect(() => {
     let mounted = true;
 
@@ -84,7 +84,7 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
             .map((row: any) => row.product_data)
             .filter(Boolean);
 
-          // Merge guest local items with remote items without duplicates (Requirement 13)
+          // Merge guest local items with remote items without duplicates
           const mergedMap = new Map<string, CartProduct>();
           remoteProducts.forEach((p) => mergedMap.set(p.id || p.slug, p));
           items.forEach((p) => mergedMap.set(p.id || p.slug, p));
@@ -119,7 +119,7 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
     };
   }, [session?.user?.id]);
 
-  // Toggle wishlist state with immediate toast (Requirements 2 & 5)
+  // Toggle wishlist state with immediate toast
   const toggleWishlist = async (product: CartProduct) => {
     const idOrSlug = product.id || product.slug;
     const exists = items.some((i) => (i.id || i.slug) === idOrSlug);

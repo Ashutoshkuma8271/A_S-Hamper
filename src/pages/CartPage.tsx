@@ -75,7 +75,7 @@ export default function CartPage() {
   return (
     <main className="min-h-screen bg-cream-50/60 dark:bg-gray-900 pt-24 pb-20 px-4 sm:px-6 lg:px-8 font-sans transition-colors">
       <div className="mx-auto max-w-7xl">
-        {/* Step Progress Indicator (Requirement 2) */}
+        {/* Step Progress Indicator */}
         <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-cream-200 dark:border-gray-800 pb-6">
           <div>
             <Link
@@ -124,7 +124,7 @@ export default function CartPage() {
           </div>
         </div>
 
-        {/* 2-Column Desktop Layout (Requirement 3) */}
+        {/* 2-Column Desktop Layout */}
         <div className="grid gap-8 lg:grid-cols-12 lg:items-start">
           {/* LEFT COLUMN: Cart Products */}
           <div className="lg:col-span-7 space-y-4">
@@ -145,7 +145,7 @@ export default function CartPage() {
               />
             ))}
 
-            {/* Promo Code Section (Requirement 6) */}
+            {/* Promo Code Section */}
             <div className="rounded-3xl border border-cream-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
               <div className="flex items-center justify-between">
                 <h3 className="font-display text-base font-semibold text-wine-800 dark:text-white flex items-center gap-2">
@@ -217,7 +217,7 @@ export default function CartPage() {
             </div>
           </div>
 
-          {/* RIGHT COLUMN: Sticky Order Summary (Requirements 3 & 5) */}
+          {/* RIGHT COLUMN: Sticky Order Summary */}
           <div className="lg:col-span-5">
             <div className="sticky top-24 space-y-4">
               <div className="rounded-3xl border border-cream-200 bg-white p-6 shadow-[0_20px_50px_-20px_rgba(87,34,44,0.15)] dark:border-gray-700 dark:bg-gray-800">
@@ -274,7 +274,7 @@ export default function CartPage() {
                   </div>
                 )}
 
-                {/* Strongest CTA Button (Requirement 3) */}
+                {/* Strongest CTA Button */}
                 <button
                   onClick={() => navigate('/checkout')}
                   className="group mt-6 w-full inline-flex items-center justify-center gap-2 rounded-full bg-wine-600 py-4 text-sm font-bold tracking-wide text-white shadow-lg shadow-wine-600/30 transition-all hover:bg-wine-700 hover:shadow-xl hover:-translate-y-0.5 active:scale-95"
@@ -326,7 +326,7 @@ export default function CartPage() {
   );
 }
 
-{/* Individual Cart Product Card Component (Requirement 4) */}
+{/* Individual Cart Product Card Component */}
 function CartProductCard({
   item,
   isWishlisted,
@@ -392,7 +392,7 @@ function CartProductCard({
               <span className="text-[10px] text-gray-400">(48 reviews)</span>
             </div>
 
-            {/* Customization Details Tag (Requirement 4) */}
+            {/* Customization Details Tag */}
             {product.customization && (
               <div className="mt-2.5 space-y-1 rounded-2xl bg-cream-50 p-2.5 text-xs text-gray-700 dark:bg-gray-700/60 dark:text-gray-300 border border-cream-200 dark:border-gray-600">
                 {product.customization.text && (
@@ -491,7 +491,7 @@ function CartProductCard({
   );
 }
 
-{/* Beautiful Empty Cart View (Requirement 8) */}
+{/* Beautiful Empty Cart View */}
 function EmptyCartView() {
   return (
     <main className="min-h-screen bg-cream-50/60 dark:bg-gray-900 pt-24 pb-20 px-4 sm:px-6 lg:px-8 font-sans transition-colors">

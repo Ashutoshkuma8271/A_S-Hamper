@@ -170,7 +170,7 @@ export default function VerifyEmailPage() {
       sessionStorage.removeItem('a_s_hamper_verify_email');
       sessionStorage.removeItem('a_s_hamper_verify_role');
 
-      // 4. Sign out active session per flowchart requirement so user MUST log in explicitly
+      // 4. Sign out active session so user logs in cleanly with new credentials
       await supabase.auth.signOut();
 
       setIsVerified(true);

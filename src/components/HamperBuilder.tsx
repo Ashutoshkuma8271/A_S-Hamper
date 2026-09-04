@@ -99,7 +99,7 @@ export default function HamperBuilder({
     ]
   );
 
-  // Custom Item Modal state (Requirement 5)
+  // Custom Item Modal state
   const [showCustomModal, setShowCustomModal] = useState(false);
   const [customItemForm, setCustomItemForm] = useState({
     name: '',
@@ -112,7 +112,7 @@ export default function HamperBuilder({
     saveAsRegularProduct: false,
   });
 
-  // Preview Modal state (Requirement 6)
+  // Preview Modal state
   const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [previewHamperObj, setPreviewHamperObj] = useState<VendorHamper | null>(null);
 
@@ -172,7 +172,7 @@ export default function HamperBuilder({
     );
   };
 
-  // Add Custom Item (Requirement 5)
+  // Add Custom Item
   const handleAddCustomItem = () => {
     if (!customItemForm.name.trim()) return;
 
@@ -373,7 +373,7 @@ export default function HamperBuilder({
             </label>
           </div>
 
-          {/* Categories & Tags (Requirement 6) */}
+          {/* Categories & Tags */}
           <div className="rounded-2xl bg-cream-100/50 p-5 ring-1 ring-cream-200 dark:bg-gray-900/50 dark:ring-gray-700 space-y-4">
             <div>
               <span className="mb-2 block text-xs font-semibold uppercase tracking-wider text-ink-700/70 dark:text-gray-300">
@@ -416,7 +416,7 @@ export default function HamperBuilder({
             </div>
           </div>
 
-          {/* Product Selection List (Requirement 2, 4) */}
+          {/* Product Selection List */}
           <div className="rounded-2xl bg-cream-100/50 p-5 ring-1 ring-cream-200 dark:bg-gray-900/50 dark:ring-gray-700">
             <div className="flex items-center justify-between mb-4">
               <div>
@@ -550,7 +550,7 @@ export default function HamperBuilder({
 
         {/* Right Financial & Media Column (5 cols) */}
         <div className="lg:col-span-5 space-y-6">
-          {/* Pricing & Fee Breakdown Card (Requirement 4) */}
+          {/* Pricing & Fee Breakdown Card */}
           <div className="rounded-2xl bg-cream-100/60 p-5 ring-1 ring-cream-200 dark:bg-gray-900/60 dark:ring-gray-700 space-y-4">
             <h3 className="font-display font-semibold text-wine-800 dark:text-gold-300 text-base flex items-center gap-2">
               <Calculator className="h-4 w-4 text-gold-600" />
@@ -717,7 +717,7 @@ export default function HamperBuilder({
         </div>
       </div>
 
-      {/* Custom Item Modal (Requirement 5) */}
+      {/* Custom Item Modal */}
       {showCustomModal && (
         <div
           className="fixed inset-0 z-[110] grid place-items-center bg-ink-900/60 backdrop-blur-sm p-4"
@@ -830,7 +830,7 @@ export default function HamperBuilder({
         </div>
       )}
 
-      {/* Website Preview Modal (Requirement 6) */}
+      {/* Website Preview Modal */}
       {showPreviewModal && previewHamperObj && (
         <HamperPreviewModal
           hamper={previewHamperObj}

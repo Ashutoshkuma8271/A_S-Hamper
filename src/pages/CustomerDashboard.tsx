@@ -82,8 +82,16 @@ export default function CustomerDashboard() {
     }
     try {
       const [{ data: orderData }, { data: addressData }] = await Promise.all([
-        supabase.from('orders').select('*').order('created_at', { ascending: false }),
-        supabase.from('customer_addresses').select('*').order('is_default', { ascending: false }),
+        supabase
+          .from('orders')
+          .select('*')
+          .eq('customer_id', session.user.id)
+          .order('created_at', { ascending: false }),
+        supabase
+          .from('customer_addresses')
+          .select('*')
+          .eq('user_id', session.user.id)
+          .order('is_default', { ascending: false }),
       ]);
       setOrders((orderData || []) as OrderRow[]);
       setAddresses((addressData || []) as Address[]);

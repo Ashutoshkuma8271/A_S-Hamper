@@ -3,6 +3,7 @@ import { supabase, type Product, type OrderRow, type Profile } from '@/lib/supab
 import { useAuth } from '@/hooks/useAuth';
 import { formatPrice } from '@/cart';
 import { VendorStore, type VendorHamper, type HamperItem } from '@/lib/vendorStore';
+import { uploadToCloudinary } from '@/lib/cloudinary';
 import { AdminSettings, BestSellersAdmin, CouponManagement, Customers, Inventory, Notifications, Reports, ResourceManager, ReviewManagement, SameDayDeliveryAdmin, AdminReturnsManager } from '@/components/AdminOperations';
 import { LoadingSkeleton } from '@/components/LoadingSkeleton';
 import ConfirmationDialog from '@/components/ConfirmationDialog';
@@ -376,17 +377,30 @@ function ProductModal({
   const [uploading, setUploading] = useState(false);
 
   async function uploadImage(file: File) {
-    if (!supabase) return;
-    setUploading(true); setError(null);
-    const extension = file.name.split('.').pop() || 'jpg';
-    const path = `${crypto.randomUUID()}.${extension}`;
-    const { error: uploadError } = await supabase.storage.from('product-images').upload(path, file, { upsert: false, contentType: file.type });
-    if (uploadError) setError(uploadError.message);
-    else {
-      const publicUrl = supabase.storage.from('product-images').getPublicUrl(path).data.publicUrl;
-      setForm((current) => ({ ...current, image: publicUrl }));
+    setUploading(true);
+    setError(null);
+    try {
+      if (supabase) {
+        const extension = file.name.split('.').pop() || 'jpg';
+        const path = `${crypto.randomUUID()}.${extension}`;
+        const { error: uploadError } = await supabase.storage.from('product-images').upload(path, file, { upsert: false, contentType: file.type });
+        if (!uploadError) {
+          const publicUrl = supabase.storage.from('product-images').getPublicUrl(path).data.publicUrl;
+          setForm((current) => ({ ...current, image: publicUrl }));
+          setUploading(false);
+          return;
+        }
+      }
+      // Resilient Cloudinary CDN upload fallback (delivers in auto WebP/AVIF format)
+      const cloudRes = await uploadToCloudinary(file);
+      if (cloudRes?.secure_url || cloudRes?.url) {
+        setForm((current) => ({ ...current, image: cloudRes.secure_url || cloudRes.url }));
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Image upload failed');
+    } finally {
+      setUploading(false);
     }
-    setUploading(false);
   }
 
   async function save() {

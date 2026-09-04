@@ -246,32 +246,36 @@ RETURNS TRIGGER AS $$
 DECLARE
   user_role TEXT;
   full_name_val TEXT;
+  avatar_url_val TEXT;
   phone_val TEXT;
   business_name_val TEXT;
 BEGIN
   user_role := COALESCE(NEW.raw_user_meta_data->>'account_type', 'user');
-  full_name_val := COALESCE(NEW.raw_user_meta_data->>'full_name', '');
+  full_name_val := COALESCE(NEW.raw_user_meta_data->>'full_name', NEW.raw_user_meta_data->>'name', SPLIT_PART(NEW.email, '@', 1));
+  avatar_url_val := COALESCE(NEW.raw_user_meta_data->>'avatar_url', NEW.raw_user_meta_data->>'picture', '');
   phone_val := COALESCE(NEW.raw_user_meta_data->>'phone', '');
   business_name_val := COALESCE(NEW.raw_user_meta_data->>'business_name', full_name_val);
 
   -- Insert profile
-  INSERT INTO public.profiles (id, email, full_name, role, phone, email_verified, account_status)
+  INSERT INTO public.profiles (id, email, full_name, avatar_url, role, phone, email_verified, account_status)
   VALUES (
     NEW.id,
     NEW.email,
     full_name_val,
+    avatar_url_val,
     user_role,
     phone_val,
-    (NEW.email_confirmed_at IS NOT NULL),
+    (NEW.email_confirmed_at IS NOT NULL OR NEW.raw_app_meta_data->>'provider' = 'google'),
     'active'
   )
   ON CONFLICT (id) DO UPDATE
   SET
     email = EXCLUDED.email,
-    full_name = EXCLUDED.full_name,
+    full_name = CASE WHEN EXCLUDED.full_name <> '' THEN EXCLUDED.full_name ELSE public.profiles.full_name END,
+    avatar_url = CASE WHEN EXCLUDED.avatar_url <> '' THEN EXCLUDED.avatar_url ELSE public.profiles.avatar_url END,
     role = EXCLUDED.role,
     phone = EXCLUDED.phone,
-    email_verified = (NEW.email_confirmed_at IS NOT NULL);
+    email_verified = (NEW.email_confirmed_at IS NOT NULL OR NEW.raw_app_meta_data->>'provider' = 'google');
 
   -- If Admin
   IF user_role = 'admin' THEN

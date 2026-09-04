@@ -24,6 +24,7 @@ export const supabase = url && anonKey && !url.includes('your_supabase_url')
 
 export type Profile = {
   id: string;
+  email?: string | null;
   role: 'admin' | 'vendor' | 'user';
   full_name: string | null;
   business_name: string | null;

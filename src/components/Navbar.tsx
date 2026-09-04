@@ -225,28 +225,32 @@ export default function Navbar() {
           {session ? (
             <Link
               to={accountLink}
-              className="flex items-center justify-center min-h-[38px] min-w-[38px] h-9 w-9 sm:h-10 sm:w-10 rounded-full bg-[#7F011F] text-[#F5EBD0] text-xs sm:text-sm font-display font-bold ring-2 ring-[#7F011F]/50 hover:ring-[#7F011F] active:scale-95 transition-all shadow-sm shrink-0 overflow-hidden"
+              className="flex items-center gap-1.5 sm:gap-2 p-1 sm:pr-3 rounded-full bg-[#7F011F] text-[#F5EBD0] hover:bg-[#950125] active:scale-95 transition-all shadow-sm shrink-0 border border-[#DFB25B]/40"
               aria-label="Account profile"
-              title={
-                profile?.role === 'vendor'
-                  ? `Vendor Studio (${profile?.business_name || session.user.email})`
-                  : profile?.full_name || 'My Account'
-              }
+              title={profile?.full_name || session.user.email || 'My Account'}
             >
-              {profile?.avatar_url ? (
-                <img src={profile.avatar_url} alt="Profile" className="h-full w-full rounded-full object-cover" />
-              ) : (
-                userInitial
-              )}
+              <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-full bg-[#DFB25B] text-[#180005] font-bold text-xs sm:text-sm flex items-center justify-center overflow-hidden shrink-0 shadow-xs">
+                {profile?.avatar_url ? (
+                  <img src={profile.avatar_url} alt="Profile" className="h-full w-full object-cover" />
+                ) : (
+                  userInitial
+                )}
+              </div>
+              <span className="hidden sm:inline-block text-xs font-bold tracking-tight text-[#F5EBD0] max-w-[85px] md:max-w-[110px] truncate">
+                {profile?.full_name?.split(' ')[0] || profile?.business_name || session.user.email?.split('@')[0] || 'Account'}
+              </span>
             </Link>
           ) : (
             <Link
               to="/profile"
-              className="flex items-center justify-center min-h-[38px] min-w-[38px] h-9 w-9 sm:h-10 sm:w-10 rounded-full text-[#7F011F] bg-white/60 dark:bg-white/5 border border-[#7F011F]/30 hover:border-[#7F011F] hover:bg-[#7F011F]/10 active:scale-95 transition-all dark:text-[#F5EBD0] dark:border-[#7F011F]/40 shrink-0 shadow-xs focus:outline-none"
+              className="flex items-center gap-1.5 px-3 py-2 rounded-full text-[#7F011F] bg-white/60 dark:bg-white/5 border border-[#7F011F]/30 hover:border-[#7F011F] hover:bg-[#7F011F]/10 active:scale-95 transition-all dark:text-[#F5EBD0] dark:border-[#7F011F]/40 shrink-0 shadow-xs focus:outline-none"
               aria-label="Sign in to your account"
               title="Sign In / Profile"
             >
               <UserRound className="h-4 w-4 sm:h-4.5 sm:w-4.5" strokeWidth={2} />
+              <span className="hidden sm:inline-block text-xs font-bold">
+                Sign In
+              </span>
             </Link>
           )}
 

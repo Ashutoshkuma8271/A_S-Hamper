@@ -24,7 +24,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
-  const fetchProfile = async (userId: string) => {
+  const fetchProfile = async (userId: string): Promise<Profile | null> => {
     if (!supabase) return null;
     try {
       const { data, error } = await supabase
@@ -44,6 +44,57 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  /**
+   * Auto-provisions or syncs profile from OAuth/Google metadata if record doesn't exist yet
+   */
+  const ensureProfile = async (user: any): Promise<Profile> => {
+    const rawMeta = user.user_metadata || {};
+    const displayName =
+      rawMeta.full_name ||
+      rawMeta.name ||
+      rawMeta.user_name ||
+      user.email?.split('@')[0] ||
+      'Customer';
+    const avatarUrl = rawMeta.avatar_url || rawMeta.picture || '';
+    const intendedRole =
+      (sessionStorage.getItem('a_s_hamper_account_intent') as 'user' | 'vendor' | 'admin') ||
+      (rawMeta.account_type as 'user' | 'vendor' | 'admin') ||
+      'user';
+
+    const fallbackProfile: Profile = {
+      id: user.id,
+      email: user.email || '',
+      full_name: displayName,
+      avatar_url: avatarUrl,
+      role: intendedRole,
+      phone: rawMeta.phone || '',
+      business_name: intendedRole === 'vendor' ? (rawMeta.business_name || `${displayName}'s Studio`) : null,
+      shop_no: null,
+      gst_no: null,
+      email_verified: Boolean(user.email_confirmed_at || rawMeta.email_verified || user.app_metadata?.provider === 'google'),
+      account_status: 'active',
+      created_at: new Date().toISOString(),
+    };
+
+    if (supabase) {
+      try {
+        const { data, error } = await supabase
+          .from('profiles')
+          .upsert(fallbackProfile, { onConflict: 'id' })
+          .select()
+          .maybeSingle();
+
+        if (data && !error) {
+          return data as Profile;
+        }
+      } catch (e) {
+        console.warn('Profile upsert warning:', e);
+      }
+    }
+
+    return fallbackProfile;
+  };
+
   useEffect(() => {
     if (!supabase) {
       setLoading(false);
@@ -58,21 +109,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       
       if (currentSession?.user?.id) {
         setSession(currentSession);
-        const userProf = await fetchProfile(currentSession.user.id);
+        let userProf = await fetchProfile(currentSession.user.id);
         
         if (!mounted) return;
         
-        if (userProf) {
+        if (!userProf) {
+          userProf = await ensureProfile(currentSession.user);
+        }
+        
+        if (mounted) {
           setProfile(userProf);
-        } else {
-          // If the profile was deleted from DB, immediately clear orphaned session
-          try {
-            await supabase?.auth.signOut();
-          } catch (e) {
-            // ignore
-          }
-          setSession(null);
-          setProfile(null);
         }
       } else {
         setSession(null);
@@ -81,19 +127,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setLoading(false);
     });
 
-
-    // 2. Auth State Change Listener
+    // 2. Auth State Change Listener (Handles Google OAuth Redirects & Email logins)
     const { data: sub } = supabase.auth.onAuthStateChange(async (_event, sess) => {
+      if (!mounted) return;
       setSession(sess);
+
       if (sess?.user?.id) {
-        const userProf = await fetchProfile(sess.user.id);
-        if (userProf) {
+        let userProf = await fetchProfile(sess.user.id);
+        if (!userProf) {
+          userProf = await ensureProfile(sess.user);
+        }
+        if (mounted) {
           setProfile(userProf);
-        } else {
-          setProfile(null);
         }
       } else {
-        setProfile(null);
+        if (mounted) {
+          setProfile(null);
+        }
       }
       setLoading(false);
     });
@@ -137,14 +187,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const refreshProfile = async () => {
     if (!session?.user?.id || !supabase) return;
-    const p = await fetchProfile(session.user.id);
-    if (p) {
-      setProfile(p);
-    } else {
-      await supabase?.auth.signOut();
-      setSession(null);
-      setProfile(null);
+    let p = await fetchProfile(session.user.id);
+    if (!p && session.user) {
+      p = await ensureProfile(session.user);
     }
+    setProfile(p);
   };
 
   const openAuthModal = () => setIsAuthModalOpen(true);
@@ -158,21 +205,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       isAdmin: profile?.role === 'admin',
       isVendor: profile?.role === 'vendor',
       signOut: async () => {
-        if (supabase) {
-          try {
-            await supabase.auth.signOut();
-          } catch (e) {
-            console.error('Sign out error:', e);
-          }
-        }
         try {
-          sessionStorage.removeItem('a_s_hamper_account_intent');
-          sessionStorage.removeItem('a_s_hamper_auth_error');
+          if (supabase) {
+            await supabase.auth.signOut();
+          }
         } catch (e) {
-          // ignore
+          console.error('Sign out error:', e);
+        } finally {
+          setSession(null);
+          setProfile(null);
         }
-        setSession(null);
-        setProfile(null);
       },
       refreshProfile,
       isAuthModalOpen,
@@ -185,17 +227,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   return (
     <AuthContext.Provider value={value}>
       {children}
-      <CheckoutAuthModal
-        isOpen={isAuthModalOpen && !session}
-        onClose={closeAuthModal}
-        onContinueAsGuest={closeAuthModal}
-      />
+      <CheckoutAuthModal isOpen={isAuthModalOpen} onClose={closeAuthModal} />
     </AuthContext.Provider>
   );
 }
 
 export function useAuth() {
-  const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error('useAuth must be used within AuthProvider');
-  return ctx;
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
 }

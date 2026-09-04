@@ -1,0 +1,21 @@
+# A_S Hamper — Personalised Artisan Gift Hampers
+
+> A_S Hamper is India's leading luxury artisan gift hamper platform, offering hand-packed custom gift hampers for birthdays, anniversaries, corporate events, weddings, and festive celebrations.
+
+## Core Offerings
+
+- [Best Sellers](https://ashutoshgifthamper.netlify.app/best-sellers): Top rated hand-packed luxury hampers with custom notes and keepsakes.
+- [Build Your Own Hamper](https://ashutoshgifthamper.netlify.app/build-your-own): Interactive custom hamper creator to choose basket, items, and personalized notes.
+- [Same Day Delivery](https://ashutoshgifthamper.netlify.app/same-day-delivery): Express gift hamper delivery across major cities.
+- [Corporate Gifting](https://ashutoshgifthamper.netlify.app/corporate): Premium bulk corporate hampers for employees, clients, and brand events.
+- [Offers & Discounts](https://ashutoshgifthamper.netlify.app/offers): Seasonal deals, promo codes, and bundle savings.
+
+## Customer & Vendor Portals
+
+- [Customer Dashboard](https://ashutoshgifthamper.netlify.app/customer): Real-time live order tracking, visual progress timeline, instant cancellations, refund wallet balance, and product return requests.
+- [Vendor Portal](https://ashutoshgifthamper.netlify.app/vendor): Vendor store dashboard to manage product inventory, accept orders, and fulfill hamper shipments.
+- [How It Works](https://ashutoshgifthamper.netlify.app/how-it-works): Complete 5-step guide on how hampers are curated, packed, and delivered.
+
+## Detailed Documentation
+
+- [Full Site Guide](https://ashutoshgifthamper.netlify.app/llms-full.txt): Comprehensive breakdown of products, categories, ordering API, and role permissions.

@@ -1,0 +1,214 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+@import 'tailwindcss';
+
+@theme {
+  --font-display: 'Fraunces', 'Playfair Display', Georgia, serif;
+  --font-sans: 'Inter', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+
+  /* Light Sand Palette (Base: #F5EBD0) */
+  --color-cream-50: #FAF6EB;
+  --color-cream-100: #F5EBD0;
+  --color-cream-200: #EBDEBA;
+  --color-cream-300: #DFCFA4;
+
+  /* Wine Red Palette (Base: #7F011F) */
+  --color-wine-400: #9C0D2E;
+  --color-wine-500: #7F011F;
+  --color-wine-600: #680018;
+  --color-wine-700: #520013;
+  --color-wine-800: #3C000D;
+  --color-wine-900: #270008;
+  --color-wine-950: #180005;
+
+  /* Supporting Luxury Sand-Gold Accents */
+  --color-gold-300: #F5EBD0;
+  --color-gold-400: #E5CFA0;
+  --color-gold-500: #C99738;
+  --color-gold-600: #9E711E;
+
+  /* Supporting Sage Accent */
+  --color-sage-400: #92A684;
+  --color-sage-500: #6F865F;
+
+  /* Deep Ink / Text */
+  --color-ink-700: #7F011F;
+  --color-ink-800: #520013;
+  --color-ink-900: #2B000A;
+  --color-ink-950: #150004;
+}
+
+@variant dark (&:where(.dark, .dark *));
+
+html {
+  scroll-behavior: smooth;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-cream-100);
+  color: var(--color-wine-900);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* Custom smooth scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-cream-100);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-cream-300);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-wine-500);
+}
+
+img {
+  content-visibility: auto;
+}
+
+/* Luxury Hamper Dark Mode surfaces - Deep Wine Red with Light Sand accents */
+.dark {
+  --color-cream-50: #180005;
+  --color-cream-100: #240008;
+  --color-cream-200: #33000C;
+  --color-cream-300: #4B0213;
+
+  --color-wine-400: #FF6E8E;
+  --color-wine-500: #F0456B;
+  --color-wine-600: #D82851;
+  --color-wine-700: #F5EBD0;
+  --color-wine-800: #FAF6EB;
+  --color-wine-900: #FFFFFF;
+  --color-wine-950: #FFFFFF;
+
+  --color-gold-300: #F5EBD0;
+  --color-gold-400: #EBDEBA;
+  --color-gold-500: #DFB25B;
+  --color-gold-600: #F5EBD0;
+
+  --color-sage-400: #B8CCA6;
+  --color-sage-500: #9CB588;
+
+  --color-ink-700: #EBDEBA;
+  --color-ink-800: #F5EBD0;
+  --color-ink-900: #FAF6EB;
+  --color-ink-950: #FFFFFF;
+  color-scheme: dark;
+}
+
+::selection {
+  background: var(--color-wine-500);
+  color: var(--color-cream-50);
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+.animate-fade-up { animation: fade-up 0.6s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.animate-fade-in { animation: fade-in 0.7s ease both; }
+.animate-float-slow { animation: float-slow 5s ease-in-out infinite; }
+.animate-marquee { animation: marquee 30s linear infinite; }
+
+.reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1), transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.text-balance { text-wrap: balance; }
+
+.cv-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 600px;
+}
+
+/* Luxury card styling with 3D Depth & Elevation */
+.hamper-card {
+  background: var(--color-cream-50);
+  border: 1px solid var(--color-cream-200);
+  border-radius: 1.5rem;
+  transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  transform-style: preserve-3d;
+}
+.hamper-card:hover {
+  border-color: var(--color-gold-400);
+  transform: translateY(-5px) scale(1.01);
+  box-shadow: 0 20px 35px -12px rgba(68, 4, 15, 0.18), 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.dark .hamper-card {
+  background: var(--color-cream-100);
+  border-color: var(--color-cream-300);
+}
+.dark .hamper-card:hover {
+  border-color: var(--color-gold-500);
+  box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.6), 0 0 15px rgba(251, 222, 156, 0.08);
+}
+
+.input {
+  width: 100%;
+  border-radius: 0.875rem;
+  border: 1px solid var(--color-cream-300);
+  background: var(--color-cream-50);
+  padding: 0.65rem 0.95rem;
+  font-size: 0.9rem;
+  color: var(--color-ink-800);
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.input::placeholder { color: rgba(68, 4, 15, 0.4); }
+.input:focus {
+  border-color: var(--color-wine-500);
+  box-shadow: 0 0 0 3px rgba(127, 1, 31, 0.15);
+}
+
+.dark .input {
+  border-color: var(--color-cream-300);
+  background: var(--color-cream-100);
+  color: var(--color-ink-800);
+}
+.dark .input::placeholder { color: rgba(245, 235, 208, 0.4); }
+.dark .input:focus {
+  border-color: var(--color-gold-400);
+  box-shadow: 0 0 0 3px rgba(251, 222, 156, 0.2);
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+

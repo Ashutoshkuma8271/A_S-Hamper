@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { Mail, ArrowLeft, Loader2, CheckCircle2, AlertCircle, Lock, ShieldCheck } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
@@ -67,30 +67,30 @@ export default function ForgotPasswordPage() {
   const roleLabel = requestedRole === 'vendor' ? 'Vendor' : requestedRole === 'admin' ? 'Admin' : 'Customer';
 
   return (
-    <main className="min-h-screen bg-cream-50/60 dark:bg-gray-900 pt-28 pb-20 px-4 sm:px-6 lg:px-8 font-sans flex items-center justify-center transition-colors">
+    <main className="min-h-screen bg-[#FAF6EB] dark:bg-[#1A0006] pt-28 pb-20 px-4 sm:px-6 lg:px-8 font-sans flex items-center justify-center transition-colors">
       <div className="w-full max-w-md">
         {/* Back link */}
         <Link
           to={backLink}
-          className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-wine-700 hover:text-wine-800 dark:text-gold-300 mb-6 transition-colors"
+          className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#7F011F] hover:text-[#57222C] dark:text-gold-300 mb-6 transition-colors"
         >
           <ArrowLeft className="h-4 w-4" /> Back to {roleLabel} Login
         </Link>
 
-        <div className="rounded-3xl border border-cream-200 bg-white p-6 sm:p-8 shadow-xl dark:border-gray-800 dark:bg-gray-800">
+        <div className="rounded-3xl border border-[#7F011F]/20 bg-white p-6 sm:p-8 shadow-2xl dark:border-gray-800 dark:bg-[#240008]">
           {!submitted ? (
             <div>
-              <div className="flex items-center gap-3">
-                <div className="grid h-12 w-12 place-items-center rounded-2xl bg-wine-600/10 text-wine-600 dark:bg-wine-600/20 dark:text-gold-300">
+              <div className="flex items-center gap-3.5 pb-4 border-b border-[#7F011F]/15 dark:border-gray-700">
+                <div className="grid h-12 w-12 place-items-center rounded-2xl bg-[#7F011F]/10 text-[#7F011F] dark:bg-[#7F011F]/30 dark:text-gold-300">
                   <Lock className="h-6 w-6" />
                 </div>
                 <div>
-                  <h1 className="font-display text-xl sm:text-2xl font-bold text-wine-800 dark:text-white">
-                    {roleLabel} Forgot Password
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#7F011F] dark:text-[#F5EBD0]">
+                    {roleLabel} Recovery
+                  </span>
+                  <h1 className="font-display text-xl sm:text-2xl font-bold text-[#7F011F] dark:text-[#F5EBD0]">
+                    Forgot Password
                   </h1>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">
-                    Reset your registered {roleLabel} account password
-                  </p>
                 </div>
               </div>
 
@@ -100,7 +100,7 @@ export default function ForgotPasswordPage() {
 
               <form onSubmit={handleSubmit} className="mt-6 space-y-4">
                 <div>
-                  <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-600 dark:text-gray-400 mb-1.5">
+                  <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1.5">
                     Registered {roleLabel} Email *
                   </label>
                   <div className="relative">
@@ -114,13 +114,13 @@ export default function ForgotPasswordPage() {
                         if (errorMsg) setErrorMsg(null);
                       }}
                       placeholder={`Enter your ${roleLabel.toLowerCase()} email`}
-                      className="w-full rounded-2xl border border-cream-300 bg-cream-50/50 pl-10 pr-4 py-2.5 text-xs text-ink-800 outline-none focus:border-wine-600 dark:border-gray-700 dark:bg-gray-700 dark:text-white"
+                      className="input pl-10 pr-4"
                     />
                   </div>
                 </div>
 
                 {errorMsg && (
-                  <p className="text-xs font-semibold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/40 p-3 rounded-xl flex items-center gap-1.5">
+                  <p className="text-xs font-semibold text-red-700 dark:text-red-300 bg-red-50 dark:bg-red-950/40 p-3 rounded-xl flex items-center gap-1.5">
                     <AlertCircle className="h-4 w-4 shrink-0" />
                     {errorMsg}
                   </p>
@@ -129,7 +129,7 @@ export default function ForgotPasswordPage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-wine-600 py-3 text-xs font-bold text-white shadow-lg shadow-wine-600/30 transition-all hover:bg-wine-700 active:scale-95 disabled:opacity-60"
+                  className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-[#7F011F] py-3.5 text-xs font-bold text-[#F5EBD0] shadow-lg shadow-[#7F011F]/25 transition-all hover:bg-[#680018] active:scale-95 disabled:opacity-60"
                 >
                   {loading ? (
                     <>
@@ -141,49 +141,49 @@ export default function ForgotPasswordPage() {
                 </button>
               </form>
 
-              <div className="mt-6 border-t border-cream-200 dark:border-gray-700 pt-4 text-center text-xs">
+              <div className="mt-6 border-t border-[#7F011F]/15 dark:border-gray-700 pt-4 text-center text-xs">
                 <span className="text-gray-500 dark:text-gray-400">Remember your password? </span>
-                <Link to={backLink} className="font-bold text-wine-600 hover:underline dark:text-gold-300">
+                <Link to={backLink} className="font-bold text-[#7F011F] hover:underline dark:text-gold-300">
                   Back to {roleLabel} Login
                 </Link>
               </div>
             </div>
           ) : (
             <div className="text-center space-y-4 py-2">
-              <div className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-sage-500/15 text-sage-600 dark:text-sage-400">
+              <div className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400">
                 <CheckCircle2 className="h-8 w-8" />
               </div>
 
-              <h2 className="font-display text-xl font-bold text-wine-800 dark:text-white">
+              <h2 className="font-display text-xl font-bold text-[#7F011F] dark:text-[#F5EBD0]">
                 Password Reset Link Sent
               </h2>
 
-              <div className="rounded-2xl bg-cream-50 p-4 border border-cream-200 dark:bg-gray-700/60 dark:border-gray-600 text-xs text-gray-600 dark:text-gray-300 leading-relaxed text-left space-y-2">
-                <p className="font-semibold text-wine-800 dark:text-gold-300">
-                  Password reset link has been sent to <strong className="text-wine-700 dark:text-gold-300">{email}</strong> via Gmail SMTP.
+              <div className="rounded-2xl bg-[#FAF6EB] p-4 border border-[#7F011F]/20 dark:bg-[#180005] dark:border-gray-700 text-xs text-gray-700 dark:text-gray-300 leading-relaxed text-left space-y-2">
+                <p className="font-semibold text-[#7F011F] dark:text-gold-300">
+                  Password reset link has been dispatched to <strong className="text-[#7F011F] dark:text-gold-300">{email}</strong>.
                 </p>
                 <p className="text-[11px] text-gray-500 dark:text-gray-400">
-                  Please open your inbox (and check spam folder) and click the link to create your new password.
+                  Please check your inbox (and spam folder) and click the link to create your new secure password.
                 </p>
               </div>
 
               <div className="pt-2 space-y-2">
                 <button
                   onClick={() => setSubmitted(false)}
-                  className="w-full rounded-full border border-cream-300 bg-white py-2.5 text-xs font-semibold text-wine-800 hover:bg-cream-100 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+                  className="w-full rounded-full border border-[#7F011F]/30 bg-white py-2.5 text-xs font-semibold text-[#7F011F] hover:bg-[#FAF6EB] dark:border-gray-700 dark:bg-gray-800 dark:text-white transition-colors"
                 >
                   Didn't receive the email? Resend
                 </button>
                 <Link
                   to={backLink}
-                  className="block w-full rounded-full bg-wine-600 py-2.5 text-xs font-bold text-white shadow hover:bg-wine-700 text-center"
+                  className="block w-full rounded-full bg-[#7F011F] py-2.5 text-xs font-bold text-[#F5EBD0] shadow hover:bg-[#680018] text-center transition-colors"
                 >
                   Back to {roleLabel} Login
                 </Link>
               </div>
 
               <div className="pt-2 flex items-center justify-center gap-1 text-[10px] text-gray-400">
-                <ShieldCheck className="h-3 w-3 text-sage-600" />
+                <ShieldCheck className="h-3.5 w-3.5 text-emerald-600" />
                 <span>Protected by Supabase Encrypted Authentication</span>
               </div>
             </div>

@@ -2,18 +2,15 @@ import { useState, useEffect } from 'react';
 import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import {
   Lock,
-  Eye,
-  EyeOff,
   CheckCircle2,
   AlertCircle,
   Loader2,
   ShieldCheck,
-  Check,
-  X,
   ArrowRight,
+  Sparkles,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
-import { isStrongPassword } from '@/components/PasswordField';
+import PasswordField, { isStrongPassword } from '@/components/PasswordField';
 
 export default function ResetPasswordPage() {
   const navigate = useNavigate();
@@ -22,8 +19,6 @@ export default function ResetPasswordPage() {
 
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -82,13 +77,7 @@ export default function ResetPasswordPage() {
     };
   }, []);
 
-  // Password Strength Checks
-  const hasMinLength = password.length >= 8;
-  const hasUppercase = /[A-Z]/.test(password);
-  const hasLowercase = /[a-z]/.test(password);
-  const hasNumber = /[0-9]/.test(password);
-  const isPasswordValid = hasMinLength && hasUppercase && hasLowercase && hasNumber;
-
+  const isPasswordValid = isStrongPassword(password);
   const passwordsMatch = password.length > 0 && password === confirmPassword;
   const isSubmitDisabled = !isPasswordValid || !passwordsMatch || loading;
 
@@ -97,7 +86,7 @@ export default function ResetPasswordPage() {
     setErrorMsg(null);
 
     if (!isPasswordValid) {
-      setErrorMsg('Password does not satisfy all safety requirements.');
+      setErrorMsg('Password does not satisfy all safety requirements (8+ characters, uppercase, lowercase, number).');
       return;
     }
 
@@ -123,7 +112,6 @@ export default function ResetPasswordPage() {
 
       if (error) {
         const msg = error.message.toLowerCase();
-        // Server-side / Supabase previous password reuse detection check
         if (
           msg.includes('same') ||
           msg.includes('previous') ||
@@ -139,7 +127,6 @@ export default function ResetPasswordPage() {
           setErrorMsg(error.message || 'Could not update password. Please try again.');
         }
       } else {
-        // Invalidate recovery session so user MUST log in explicitly with the new password
         await supabase.auth.signOut();
         setIsSuccess(true);
       }
@@ -162,21 +149,21 @@ export default function ResetPasswordPage() {
 
   if (tokenExpired) {
     return (
-      <main className="min-h-screen bg-cream-50/60 dark:bg-gray-900 pt-28 pb-20 px-4 font-sans flex items-center justify-center">
-        <div className="w-full max-w-md rounded-3xl bg-white p-8 text-center shadow-xl dark:bg-gray-800 border border-cream-200 dark:border-gray-700">
-          <div className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400">
+      <main className="min-h-screen bg-[#FAF6EB] dark:bg-[#1A0006] pt-28 pb-20 px-4 font-sans flex items-center justify-center">
+        <div className="w-full max-w-md rounded-3xl bg-white p-8 text-center shadow-2xl dark:bg-[#240008] border border-[#7F011F]/20 dark:border-gray-800">
+          <div className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-red-100 text-red-600 dark:bg-red-950/40 dark:text-red-400">
             <AlertCircle className="h-8 w-8" />
           </div>
-          <h1 className="mt-4 font-display text-xl font-bold text-wine-800 dark:text-white">
+          <h1 className="mt-4 font-display text-xl font-bold text-[#7F011F] dark:text-[#F5EBD0]">
             Reset Link Expired or Invalid
           </h1>
-          <p className="mt-2 text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
+          <p className="mt-2 text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
             This password reset link has expired or has already been used. Please request a new password reset link.
           </p>
 
           <Link
             to={`/forgot-password?role=${userRole}`}
-            className="mt-6 inline-flex items-center justify-center gap-2 rounded-full bg-wine-600 px-6 py-3 text-xs font-bold text-white shadow hover:bg-wine-700 w-full"
+            className="mt-6 inline-flex items-center justify-center gap-2 rounded-full bg-[#7F011F] px-6 py-3 text-xs font-bold text-[#F5EBD0] shadow hover:bg-[#680018] w-full transition-all"
           >
             Request New Reset Link
           </Link>
@@ -186,106 +173,61 @@ export default function ResetPasswordPage() {
   }
 
   return (
-    <main className="min-h-screen bg-cream-50/60 dark:bg-gray-900 pt-28 pb-20 px-4 sm:px-6 lg:px-8 font-sans flex items-center justify-center transition-colors">
+    <main className="min-h-screen bg-[#FAF6EB] dark:bg-[#1A0006] pt-28 pb-20 px-4 sm:px-6 lg:px-8 font-sans flex items-center justify-center transition-colors">
       <div className="w-full max-w-md">
-        <div className="rounded-3xl border border-cream-200 bg-white p-6 sm:p-8 shadow-xl dark:border-gray-800 dark:bg-gray-800">
+        <div className="rounded-3xl border border-[#7F011F]/20 bg-white p-6 sm:p-8 shadow-2xl dark:border-gray-800 dark:bg-[#240008]">
           {!isSuccess ? (
             <div>
-              <div className="flex items-center gap-3">
-                <div className="grid h-12 w-12 place-items-center rounded-2xl bg-wine-600/10 text-wine-600 dark:bg-wine-600/20 dark:text-gold-300">
+              <div className="flex items-center gap-3.5 pb-4 border-b border-[#7F011F]/15 dark:border-gray-700">
+                <div className="grid h-12 w-12 place-items-center rounded-2xl bg-[#7F011F]/10 text-[#7F011F] dark:bg-[#7F011F]/30 dark:text-gold-300">
                   <Lock className="h-6 w-6" />
                 </div>
                 <div>
-                  <h1 className="font-display text-xl sm:text-2xl font-bold text-wine-800 dark:text-white">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#7F011F] dark:text-[#F5EBD0]">
+                    {userRole} Security
+                  </span>
+                  <h1 className="font-display text-xl sm:text-2xl font-bold text-[#7F011F] dark:text-[#F5EBD0]">
                     Create New Password
                   </h1>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 font-medium capitalize">
-                    {userRole} Account Security
-                  </p>
                 </div>
               </div>
 
               <form onSubmit={handleUpdatePassword} className="mt-6 space-y-4">
-                {/* New Password Input */}
+                {/* New Password Input with live strength & eye toggle */}
                 <div>
-                  <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-600 dark:text-gray-400 mb-1.5">
+                  <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1.5">
                     New Password *
                   </label>
-                  <div className="relative">
-                    <input
-                      type={showPassword ? 'text' : 'password'}
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      placeholder="••••••••"
-                      className="w-full rounded-2xl border border-cream-300 bg-cream-50/50 pl-4 pr-11 py-2.5 text-xs text-ink-800 outline-none focus:border-wine-600 dark:border-gray-700 dark:bg-gray-700 dark:text-white font-mono"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3.5 top-2.5 text-gray-400 hover:text-wine-600"
-                      aria-label={showPassword ? 'Hide password' : 'Show password'}
-                    >
-                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                    </button>
-                  </div>
+                  <PasswordField
+                    value={password}
+                    onChange={setPassword}
+                    autoComplete="new-password"
+                    showStrength={true}
+                    placeholder="Min 8 chars (upper, lower, number)"
+                  />
                 </div>
 
                 {/* Confirm Password Input */}
                 <div>
-                  <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-600 dark:text-gray-400 mb-1.5">
+                  <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1.5">
                     Confirm New Password *
                   </label>
-                  <div className="relative">
-                    <input
-                      type={showConfirmPassword ? 'text' : 'password'}
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                      placeholder="••••••••"
-                      className="w-full rounded-2xl border border-cream-300 bg-cream-50/50 pl-4 pr-11 py-2.5 text-xs text-ink-800 outline-none focus:border-wine-600 dark:border-gray-700 dark:bg-gray-700 dark:text-white font-mono"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                      className="absolute right-3.5 top-2.5 text-gray-400 hover:text-wine-600"
-                      aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
-                    >
-                      {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                    </button>
-                  </div>
+                  <PasswordField
+                    value={confirmPassword}
+                    onChange={setConfirmPassword}
+                    autoComplete="new-password"
+                    showStrength={false}
+                    placeholder="Re-enter your new password"
+                  />
                   {confirmPassword.length > 0 && !passwordsMatch && (
-                    <p className="mt-1.5 text-xs font-semibold text-red-600 dark:text-red-400 flex items-center gap-1">
-                      <X className="h-3.5 w-3.5" /> Passwords do not match.
+                    <p className="mt-1.5 text-xs font-semibold text-red-600 dark:text-red-400">
+                      ⚠️ Passwords do not match.
                     </p>
                   )}
                 </div>
 
-                {/* Dynamic Password Requirements Checklist */}
-                <div className="rounded-2xl bg-cream-100/70 p-3.5 border border-cream-200 dark:bg-gray-700/50 dark:border-gray-600 space-y-1.5 text-xs">
-                  <p className="text-[11px] font-bold uppercase tracking-wider text-gray-600 dark:text-gray-300 mb-1">
-                    Password Security Requirements:
-                  </p>
-                  <div className="grid grid-cols-2 gap-1 text-[11px]">
-                    <span className={`flex items-center gap-1 font-semibold ${hasMinLength ? 'text-sage-600 dark:text-sage-400' : 'text-gray-400'}`}>
-                      {hasMinLength ? <Check className="h-3.5 w-3.5 text-sage-600" /> : <X className="h-3.5 w-3.5" />}
-                      At least 8 characters
-                    </span>
-                    <span className={`flex items-center gap-1 font-semibold ${hasUppercase ? 'text-sage-600 dark:text-sage-400' : 'text-gray-400'}`}>
-                      {hasUppercase ? <Check className="h-3.5 w-3.5 text-sage-600" /> : <X className="h-3.5 w-3.5" />}
-                      One uppercase letter
-                    </span>
-                    <span className={`flex items-center gap-1 font-semibold ${hasLowercase ? 'text-sage-600 dark:text-sage-400' : 'text-gray-400'}`}>
-                      {hasLowercase ? <Check className="h-3.5 w-3.5 text-sage-600" /> : <X className="h-3.5 w-3.5" />}
-                      One lowercase letter
-                    </span>
-                    <span className={`flex items-center gap-1 font-semibold ${hasNumber ? 'text-sage-600 dark:text-sage-400' : 'text-gray-400'}`}>
-                      {hasNumber ? <Check className="h-3.5 w-3.5 text-sage-600" /> : <X className="h-3.5 w-3.5" />}
-                      One number
-                    </span>
-                  </div>
-                </div>
-
                 {errorMsg && (
-                  <p className="text-xs font-semibold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/40 p-3 rounded-xl flex items-center gap-1.5">
+                  <p className="text-xs font-semibold text-red-700 dark:text-red-300 bg-red-50 dark:bg-red-950/40 p-3 rounded-xl flex items-center gap-1.5">
                     <AlertCircle className="h-4 w-4 shrink-0" />
                     {errorMsg}
                   </p>
@@ -294,14 +236,14 @@ export default function ResetPasswordPage() {
                 <button
                   type="submit"
                   disabled={isSubmitDisabled}
-                  className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-wine-600 py-3 text-xs font-bold text-white shadow-lg shadow-wine-600/30 transition-all hover:bg-wine-700 active:scale-95 disabled:opacity-50"
+                  className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-[#7F011F] py-3.5 text-xs font-bold text-[#F5EBD0] shadow-lg shadow-[#7F011F]/25 transition-all hover:bg-[#680018] active:scale-95 disabled:opacity-50"
                 >
                   {loading ? (
                     <>
                       <Loader2 className="h-4 w-4 animate-spin" /> Updating Password...
                     </>
                   ) : (
-                    'Update Password'
+                    'Set New Password & Confirm'
                   )}
                 </button>
               </form>
@@ -309,11 +251,11 @@ export default function ResetPasswordPage() {
           ) : (
             /* Success After Password Reset */
             <div className="text-center space-y-4 py-2">
-              <div className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-sage-500/15 text-sage-600 dark:text-sage-400">
+              <div className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400">
                 <CheckCircle2 className="h-8 w-8" />
               </div>
 
-              <h2 className="font-display text-xl font-bold text-wine-800 dark:text-white">
+              <h2 className="font-display text-xl font-bold text-[#7F011F] dark:text-[#F5EBD0]">
                 Password Reset Successful!
               </h2>
 
@@ -323,14 +265,14 @@ export default function ResetPasswordPage() {
 
               <button
                 onClick={handleContinueToLogin}
-                className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-wine-600 py-3 text-xs font-bold text-white shadow-lg shadow-wine-600/30 transition-all hover:bg-wine-700"
+                className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-[#7F011F] py-3 text-xs font-bold text-[#F5EBD0] shadow-lg shadow-[#7F011F]/25 transition-all hover:bg-[#680018]"
               >
                 Log In as {userRole.charAt(0).toUpperCase() + userRole.slice(1)}
                 <ArrowRight className="h-4 w-4" />
               </button>
 
               <div className="pt-2 flex items-center justify-center gap-1 text-[10px] text-gray-400">
-                <ShieldCheck className="h-3 w-3 text-sage-600" />
+                <ShieldCheck className="h-3.5 w-3.5 text-emerald-600" />
                 <span>Protected by Supabase Encrypted Authentication</span>
               </div>
             </div>

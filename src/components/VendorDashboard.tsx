@@ -135,8 +135,28 @@ export default function VendorDashboard({
     const unSub = subscribeToRealtimeOrders(() => {
       void fetchVendorOrders();
     });
-    return () => unSub();
-  }, [fetchVendorOrders]);
+
+    let channel: any = null;
+    if (supabase) {
+      channel = supabase
+        .channel(`vendor_realtime_${vendorId}`)
+        .on(
+          'postgres_changes',
+          { event: '*', schema: 'public', table: 'products' },
+          () => {
+            refreshData();
+          }
+        )
+        .subscribe();
+    }
+
+    return () => {
+      unSub();
+      if (channel && supabase) {
+        supabase.removeChannel(channel);
+      }
+    };
+  }, [fetchVendorOrders, refreshData, vendorId]);
 
   // Product Delete Confirmation Handler
   const confirmDeleteProduct = () => {

@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from 'react';
+import { useEffect, useState, useCallback, type FormEvent } from 'react';
 import { BarChart3, Bell, Check, ChevronDown, Eye, FileText, Image, Loader2, PackageSearch, Plus, Search, Settings, Tag, Trash2, Users } from 'lucide-react';
 import { supabase, type Product, type Profile } from '@/lib/supabase';
 import { formatPrice } from '@/cart';
@@ -232,15 +232,33 @@ export function ReviewManagement() {
   const [reviewToDelete, setReviewToDelete] = useState<Resource | null>(null);
   const [deleting, setDeleting] = useState(false);
 
-  const load = async () => {
+  const load = useCallback(async () => {
     if (!supabase) return;
     setLoading(true);
     const { data } = await supabase.from('admin_resources').select('*').eq('kind', 'review').order('created_at', { ascending: false });
     setReviews((data || []) as Resource[]);
     setLoading(false);
-  };
+  }, []);
 
-  useEffect(() => { void load(); }, []);
+  useEffect(() => {
+    void load();
+    if (!supabase) return;
+
+    const channel = supabase
+      .channel('realtime_reviews_admin')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'admin_resources' },
+        () => {
+          void load();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase?.removeChannel(channel);
+    };
+  }, [load]);
 
   const setStatus = async (review: Resource, approved: boolean) => {
     if (supabase) {

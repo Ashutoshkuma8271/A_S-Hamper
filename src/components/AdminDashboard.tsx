@@ -53,6 +53,7 @@ export default function AdminDashboard() {
     const { data } = await supabase.from('orders').select('*').order('created_at', { ascending: false });
     setOrders((data as OrderRow[]) || []);
   }, []);
+
   const loadCustomerCount = useCallback(async () => {
     if (!supabase) return;
     const { count } = await supabase.from('profiles').select('*', { count: 'exact', head: true }).neq('role', 'admin');
@@ -65,9 +66,45 @@ export default function AdminDashboard() {
       return;
     }
     Promise.all([loadProducts(), loadOrders(), loadCustomerCount()]).finally(() => setLoading(false));
+
+    // Real-time live synchronization across orders, products, and customer profiles
+    const channel = supabase
+      .channel('admin_dashboard_realtime')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'orders' },
+        (payload) => {
+          if (payload.eventType === 'INSERT') {
+            const newOrder = payload.new as OrderRow;
+            toast.success(`🔔 New Order #${(newOrder.id || '').slice(0, 8)} received!`, {
+              id: `admin-new-order-${newOrder.id}`,
+            });
+          }
+          loadOrders();
+        }
+      )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'products' },
+        () => {
+          loadProducts();
+        }
+      )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'profiles' },
+        () => {
+          loadCustomerCount();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase?.removeChannel(channel);
+    };
   }, [loadProducts, loadOrders, loadCustomerCount]);
 
-  const revenue = orders.reduce((s, o) => s + o.total, 0);
+  const revenue = orders.reduce((s, o) => s + (Number(o.total) || 0), 0);
   const newCount = orders.filter((o) => o.status === 'new').length;
 
   return (

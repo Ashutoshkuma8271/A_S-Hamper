@@ -44,18 +44,19 @@ function App() {
             <Toaster
               position="top-center"
               reverseOrder={false}
-              gutter={10}
+              gutter={8}
               toastOptions={{
-                duration: 3000,
+                duration: 3200,
                 style: {
                   background: '#2B040B',
                   color: '#FAF4E8',
-                  border: '1px solid rgba(229, 192, 123, 0.4)',
+                  border: '1px solid rgba(229, 192, 123, 0.35)',
                   borderRadius: '9999px',
-                  padding: '10px 20px',
-                  fontSize: '13px',
+                  padding: '8px 18px',
+                  fontSize: '12.5px',
                   fontWeight: 600,
-                  boxShadow: '0 20px 40px -10px rgba(43, 4, 11, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.05)',
+                  maxWidth: '400px',
+                  boxShadow: '0 12px 30px -8px rgba(43, 4, 11, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05)',
                   backdropFilter: 'blur(8px)',
                   letterSpacing: '0.01em',
                 },

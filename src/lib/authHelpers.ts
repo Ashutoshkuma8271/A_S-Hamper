@@ -35,16 +35,12 @@ export async function checkRoleCollision(
 
 /**
  * Triggers Google OAuth with prompt="select_account"
- * This forces Google to show the Account Chooser screen so the user can select ANY email ID!
+ * This forces Google to show the Account Chooser screen so the user can select their email ID.
  */
 export async function triggerGoogleSignIn(
   intendedRole: AccountRole,
   redirectPath = '/profile'
 ): Promise<void> {
-  if (intendedRole === 'admin') {
-    throw new Error('Google Sign-In is disabled for Admin accounts. Please sign in using your Admin email and password credentials.');
-  }
-
   if (!supabase) {
     throw new Error('Authentication is not configured. Please check environment variables.');
   }
@@ -85,6 +81,24 @@ export async function validateSessionRole(): Promise<string | null> {
       .eq('id', session.user.id)
       .maybeSingle();
 
+    // Check if another admin exists if attempting admin login
+    if (intendedRole === 'admin') {
+      const { data: existingAdmins } = await supabase
+        .from('profiles')
+        .select('id, email')
+        .eq('role', 'admin')
+        .limit(2);
+
+      if (existingAdmins && existingAdmins.length > 0) {
+        const primaryAdmin = existingAdmins[0];
+        if (primaryAdmin.id !== session.user.id && primaryAdmin.email !== session.user.email) {
+          sessionStorage.removeItem('a_s_hamper_account_intent');
+          await supabase.auth.signOut();
+          return 'Access Denied: Only the authorized primary Administrator can sign in to the Admin Portal.';
+        }
+      }
+    }
+
     if (profile && profile.role && profile.role !== intendedRole) {
       // Clear intent and sign out
       sessionStorage.removeItem('a_s_hamper_account_intent');
@@ -100,3 +114,4 @@ export async function validateSessionRole(): Promise<string | null> {
 
   return null;
 }
+

@@ -47,7 +47,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   /**
    * Auto-provisions or syncs profile from OAuth/Google metadata if record doesn't exist yet
    */
-  const ensureProfile = async (user: any): Promise<Profile> => {
+  const ensureProfile = async (user: any, requestedRole?: string): Promise<Profile | null> => {
     const rawMeta = user.user_metadata || {};
     const displayName =
       rawMeta.full_name ||
@@ -57,9 +57,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       'Customer';
     const avatarUrl = rawMeta.avatar_url || rawMeta.picture || '';
     const intendedRole =
+      (requestedRole as 'user' | 'vendor' | 'admin') ||
       (sessionStorage.getItem('a_s_hamper_account_intent') as 'user' | 'vendor' | 'admin') ||
       (rawMeta.account_type as 'user' | 'vendor' | 'admin') ||
       'user';
+
+    // Single-Admin Enforcement: Check if an Admin already exists
+    if (intendedRole === 'admin' && supabase) {
+      try {
+        const { data: existingAdmins } = await supabase
+          .from('profiles')
+          .select('id, email')
+          .eq('role', 'admin')
+          .limit(2);
+
+        if (existingAdmins && existingAdmins.length > 0) {
+          const primaryAdmin = existingAdmins[0];
+          if (primaryAdmin.id !== user.id && primaryAdmin.email !== user.email) {
+            console.warn('Unauthorized attempt to register additional Admin account.');
+            await supabase.auth.signOut();
+            return null;
+          }
+        }
+      } catch (err) {
+        console.warn('Admin check warning:', err);
+      }
+    }
 
     const fallbackProfile: Profile = {
       id: user.id,
@@ -85,6 +108,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           .maybeSingle();
 
         if (data && !error) {
+          // Also sync to role-specific tables
+          if (intendedRole === 'admin') {
+            await supabase.from('admins').upsert({
+              id: user.id,
+              email: user.email || '',
+              name: displayName,
+              is_active: true,
+            }, { onConflict: 'id' });
+          } else if (intendedRole === 'vendor') {
+            await supabase.from('vendors').upsert({
+              id: user.id,
+              business_name: rawMeta.business_name || `${displayName}'s Studio`,
+              email: user.email || '',
+              phone: rawMeta.phone || null,
+              status: 'active',
+            }, { onConflict: 'id' });
+          }
+
           return data as Profile;
         }
       } catch (e) {
@@ -114,7 +155,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (!mounted) return;
         
         if (!userProf) {
-          userProf = await ensureProfile(currentSession.user);
+          const intent = sessionStorage.getItem('a_s_hamper_account_intent');
+          if (intent) {
+            userProf = await ensureProfile(currentSession.user, intent);
+            sessionStorage.removeItem('a_s_hamper_account_intent');
+          } else {
+            // Profile was removed from database: force sign out so user registers anew
+            await supabase?.auth.signOut();
+            if (mounted) {
+              setSession(null);
+              setProfile(null);
+              setLoading(false);
+            }
+            return;
+          }
         }
         
         if (mounted) {
@@ -135,7 +189,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (sess?.user?.id) {
         let userProf = await fetchProfile(sess.user.id);
         if (!userProf) {
-          userProf = await ensureProfile(sess.user);
+          const intent = sessionStorage.getItem('a_s_hamper_account_intent');
+          if (intent) {
+            userProf = await ensureProfile(sess.user, intent);
+            sessionStorage.removeItem('a_s_hamper_account_intent');
+          } else {
+            // Profile not found in database: sign out
+            await supabase?.auth.signOut();
+            if (mounted) {
+              setSession(null);
+              setProfile(null);
+              setLoading(false);
+            }
+            return;
+          }
         }
         if (mounted) {
           setProfile(userProf);
@@ -157,6 +224,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // 3. Real-time Profile Updates Listener
   useEffect(() => {
     if (!session?.user?.id || !supabase) return;
+
 
     const channel = supabase
       .channel(`profile-${session.user.id}`)

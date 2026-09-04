@@ -147,16 +147,20 @@ export default function VerifyEmailPage() {
       // 2. Guarantee user profile record is created and stored in database with email_verified = true
       if (data?.user?.id) {
         const metaData = data.user.user_metadata || {};
+        const assignedRole = metaData.account_type || (role === 'customer' ? 'user' : role) || 'user';
+        const userEmail = data.user.email || email.trim();
+
         await supabase
           .from('profiles')
           .upsert(
             {
               id: data.user.id,
+              email: userEmail,
               full_name: metaData.full_name || metaData.business_name || 'User',
               business_name: metaData.business_name || null,
               shop_no: metaData.shop_no || null,
               gst_no: metaData.gst_no || null,
-              role: metaData.account_type || role || 'user',
+              role: assignedRole,
               phone: metaData.phone || null,
               email_verified: true,
               account_status: 'active',
@@ -164,6 +168,31 @@ export default function VerifyEmailPage() {
             },
             { onConflict: 'id' }
           );
+
+        if (assignedRole === 'admin') {
+          await supabase.from('admins').upsert(
+            {
+              id: data.user.id,
+              email: userEmail,
+              name: metaData.full_name || 'Admin',
+              is_active: true,
+            },
+            { onConflict: 'id' }
+          );
+        } else if (assignedRole === 'vendor') {
+          await supabase.from('vendors').upsert(
+            {
+              id: data.user.id,
+              business_name: metaData.business_name || 'Vendor Studio',
+              email: userEmail,
+              phone: metaData.phone || null,
+              shop_no: metaData.shop_no || null,
+              gst_no: metaData.gst_no || null,
+              status: 'active',
+            },
+            { onConflict: 'id' }
+          );
+        }
       }
 
       // 3. Clear temporary verification storage

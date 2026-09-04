@@ -172,7 +172,8 @@ export default function AdminAuth() {
         }
 
         if (data.user?.identities?.length === 0) {
-          throw new Error('An account with this email already exists. Please log in instead.');
+          setMode('login');
+          throw new Error('An Administrator account with this email already exists. Switched to Sign In mode. Please enter your password or use "Forgot Admin Password" to reset.');
         }
 
         sessionStorage.setItem('a_s_hamper_verify_email', cleanEmail);

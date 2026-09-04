@@ -13,7 +13,7 @@ export default function VerifyEmailPage() {
 
   const [email] = useState(queryEmail);
   const [role] = useState(queryRole);
-  const [otp, setOtp] = useState(['', '', '', '', '', '', '', '']); // Supports up to 8-digit OTP
+  const [otp, setOtp] = useState(['', '', '', '', '', '']); // 6-digit standard OTP
   const [loading, setLoading] = useState(false);
   const [resending, setResending] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -47,7 +47,7 @@ export default function VerifyEmailPage() {
     setErrorMsg(null);
 
     // Auto-advance to next input
-    if (value && index < 7) {
+    if (value && index < 5) {
       inputRefs.current[index + 1]?.focus();
     }
   };
@@ -60,14 +60,14 @@ export default function VerifyEmailPage() {
 
   const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
     e.preventDefault();
-    const pasteData = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 8);
+    const pasteData = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6);
     if (pasteData) {
-      const newOtp = ['', '', '', '', '', '', '', ''];
+      const newOtp = ['', '', '', '', '', ''];
       for (let i = 0; i < pasteData.length; i++) {
         newOtp[i] = pasteData[i];
       }
       setOtp(newOtp);
-      const focusIndex = Math.min(pasteData.length, 7);
+      const focusIndex = Math.min(pasteData.length, 5);
       if (inputRefs.current[focusIndex]) {
         inputRefs.current[focusIndex]?.focus();
       }
@@ -213,7 +213,7 @@ export default function VerifyEmailPage() {
               <form onSubmit={handleVerifyOtp} className="mt-6 space-y-5">
                 <div>
                   <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-600 dark:text-gray-400 mb-2 text-center">
-                    Enter OTP Code (6 to 8 Digits)
+                    Enter 6-Digit Verification Code
                   </label>
 
                   <div className="flex items-center justify-center gap-1.5 sm:gap-2" onPaste={handlePaste}>

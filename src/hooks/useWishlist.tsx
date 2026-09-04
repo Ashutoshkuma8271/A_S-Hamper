@@ -197,14 +197,10 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // Move product to cart (Adds to cart & removes from wishlist - Requirement 7)
+  // Move product to cart (Adds to cart & removes from wishlist)
   const moveToCart = (product: CartProduct) => {
     add(product);
     removeFromWishlist(product.id || product.slug);
-    toast.success('Moved to Cart', {
-      id: `move-${product.id || product.slug}`,
-      icon: '📦',
-    });
   };
 
   const isWishlisted = (idOrSlug: string) => {

@@ -152,7 +152,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       }
       return [...prev, { product, qty: 1 }];
     });
-    toast.success(`🛒 "${product.name}" added to cart!`, {
+    toast.success(`Added "${product.name}" to cart`, {
       id: `cart-${product.slug}`,
     });
   };

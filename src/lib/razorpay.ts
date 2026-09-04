@@ -58,8 +58,8 @@ export async function openRazorpayCheckout({
     amount: Math.round(amount * 100), // convert to paise
     currency: 'INR',
     name: 'A_S Hamper',
-    description: `Order #${orderNumber} - Personalised Gift Hampers`,
-    image: 'https://cdn-icons-png.flaticon.com/128/3670/3670051.png',
+    description: `Order #${orderNumber} - Personalised Luxury Hampers`,
+    image: `${window.location.origin}/hero-hamper.webp`,
     handler: function (response: RazorpaySuccessResponse) {
       if (response && response.razorpay_payment_id) {
         onSuccess(response);

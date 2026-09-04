@@ -83,8 +83,9 @@ export default function CheckoutPage() {
     clear,
   } = useCart();
 
-  // Scroll Unlocking Guard
+  // Scroll to top & unlocking guard on mount
   useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' as ScrollBehavior });
     document.body.style.overflow = 'unset';
     document.documentElement.style.overflow = 'unset';
   }, []);
@@ -445,7 +446,7 @@ export default function CheckoutPage() {
       }
 
       clear();
-      toast.success('Order placed successfully! Redirecting...');
+      toast.success('Order placed successfully!');
       navigate(`/order-confirmation/${generatedOrderNumber}`, { replace: true });
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Error creating order record.';
@@ -1090,10 +1091,7 @@ export default function CheckoutPage() {
                     <div className="flex items-center justify-between flex-wrap gap-2">
                       <span className="font-display text-xs sm:text-sm font-bold text-[#7F011F] dark:text-[#F5EBD0] flex items-center gap-1.5">
                         <CreditCard className="h-4 w-4" />
-                        Razorpay Secure Gateway (Instant UPI, Cards &amp; NetBanking)
-                      </span>
-                      <span className="rounded-full bg-[#7F011F]/15 text-[#7F011F] dark:text-[#F5EBD0] text-[10px] font-extrabold px-2.5 py-0.5">
-                        Recommended
+                        Online Payment (Instant UPI, Cards &amp; NetBanking)
                       </span>
                     </div>
                     <p className="text-[11px] text-[#7F011F]/70 dark:text-[#F5EBD0]/70 mt-1 leading-relaxed">

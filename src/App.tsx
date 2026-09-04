@@ -35,6 +35,8 @@ const HowItWorksPage = lazy(() => import('@/pages/HowItWorksPage'));
 const HandPackedPage = lazy(() => import('@/pages/HandPackedPage'));
 const SameDayDeliveryPage = lazy(() => import('@/pages/SameDayDeliveryPage'));
 
+import ScrollToTop from '@/components/ScrollToTop';
+
 function App() {
   return (
     <ThemeProvider>
@@ -75,8 +77,9 @@ function App() {
               }}
             />
             <Router>
-            <div className="min-h-screen bg-cream-50 dark:bg-gray-900 transition-colors pb-16 md:pb-0">
-              <Navbar />
+              <ScrollToTop />
+              <div className="min-h-screen bg-cream-50 dark:bg-gray-900 transition-colors pb-16 md:pb-0">
+                <Navbar />
               <Suspense
                 fallback={
                   <main className="min-h-screen pt-28 px-4 sm:px-6 max-w-7xl mx-auto" aria-busy="true">

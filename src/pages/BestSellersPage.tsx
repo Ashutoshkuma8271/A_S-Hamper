@@ -163,7 +163,6 @@ export default function BestSellersPage() {
       description: product.description,
       tag: product.tag,
     });
-    toast.success(`Added ${product.name} to cart!`, { icon: '🎁' });
   };
 
   const handleWishlistToggle = (product: Product) => {

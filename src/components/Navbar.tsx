@@ -129,13 +129,14 @@ export default function Navbar() {
       }`}
     >
       <div className="w-full max-w-[1440px] mx-auto flex items-center justify-between gap-1.5 xs:gap-2 sm:gap-3 lg:gap-4 xl:gap-6 px-2.5 xs:px-3 sm:px-5 lg:px-6 xl:px-8">
-        {/* Left: Brand Logo (Non-Clickable Luxury Identity) */}
-        <div
-          className="shrink-0 flex items-center select-none cursor-default py-0.5"
-          aria-label="A_S Hamper Artisan Gift Hampers"
+        {/* Left: Brand Logo */}
+        <Link
+          to="/"
+          className="shrink-0 flex items-center py-0.5 transition-opacity hover:opacity-95 cursor-pointer"
+          aria-label="A_S Hamper - Go to Homepage"
         >
           <BrandLogo variant="horizontal" size="sm" />
-        </div>
+        </Link>
 
         {/* Center: Desktop Navigation Links (Responsive for 1024px, 1280px, 1440px+) */}
         <nav
